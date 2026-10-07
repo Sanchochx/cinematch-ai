@@ -1,0 +1,39 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: cinematch_frontend
+    ports:
+      - "5173:3000" # Exponemos al host
+    networks:
+      - public_network
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: cinematch_gateway
+    ports:
+      - "3000:3000" # Exponemos al host para pruebas locales
+    networks:
+      - public_network
+      - internal_network
+
+  ai-engine:
+    build: ./ai-engine
+    container_name: cinematch_ai_engine
+    networks:
+      - internal_network
+      - ai_network
+
+  mcp-server:
+    build: ./mcp-server
+    container_name: cinematch_mcp
+    networks:
+      - ai_network
+      - internal_network
+
+networks:
+  public_network:
+    driver: bridge
+  internal_network:
+    driver: bridge
+  ai_network:
+    internal: true # Red hermética (Sin acceso a internet)
