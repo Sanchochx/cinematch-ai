@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 
-from providers.base import MovieSummary, ProviderSource
+from providers.base import CastMember, MovieDetails, MovieSummary, ProviderSource
 from providers.errors import (
     MovieNotFoundError,
     TmdbAuthError,
@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 HTTP_UNAUTHORIZED = 401
 HTTP_NOT_FOUND = 404
 HTTP_TOO_MANY_REQUESTS = 429
+
+MAX_CAST_MEMBERS = 5
+DIRECTOR_JOB = "Director"
 
 REDACTED = "***"
 # Loggers que registran la URL completa de cada petición (incluido el parámetro api_key).
@@ -46,6 +49,20 @@ def _release_year(release_date: str | None) -> int | None:
     if release_date and release_date[:4].isdigit():
         return int(release_date[:4])
     return None
+
+
+def _directors(crew: list[dict[str, Any]]) -> str | None:
+    names = [member["name"] for member in crew if member.get("job") == DIRECTOR_JOB]
+    return ", ".join(names) or None
+
+
+def _top_cast(cast: list[dict[str, Any]]) -> list[CastMember]:
+    # `order` es el orden de aparición en los créditos; sin él, el miembro va al final.
+    ordered = sorted(cast, key=lambda member: member.get("order", len(cast)))
+    return [
+        CastMember(name=member["name"], character=member.get("character", ""))
+        for member in ordered[:MAX_CAST_MEMBERS]
+    ]
 
 
 def _parse_retry_after(value: str | None) -> int | None:
@@ -164,3 +181,24 @@ class TmdbProvider:
             # /search/movie no filtra por género, así que se hace aquí.
             items = [item for item in items if genre_id in item.get("genre_ids", [])]
         return [self._to_summary(item, genre_names) for item in items[:limit]]
+
+    async def get_movie_details(self, *, movie_id: int) -> MovieDetails:
+        try:
+            # Detalles y créditos en una sola petición.
+            data = await self.get_json(f"/movie/{movie_id}", {"append_to_response": "credits"})
+        except MovieNotFoundError:
+            raise MovieNotFoundError(movie_id) from None
+
+        credits = data.get("credits") or {}
+        return MovieDetails(
+            id=data["id"],
+            title=data.get("title", ""),
+            # Vacía si TMDB no tiene sinopsis en el idioma configurado: no se inventa texto.
+            overview=data.get("overview") or "",
+            director=_directors(credits.get("crew", [])),
+            cast=_top_cast(credits.get("cast", [])),
+            # TMDB usa 0 o null cuando no conoce la duración.
+            runtime=data.get("runtime") or None,
+            genres=[genre["name"] for genre in data.get("genres", [])],
+            release_date=data.get("release_date") or None,
+        )

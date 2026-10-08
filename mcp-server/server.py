@@ -4,6 +4,7 @@ from mcp.server.fastmcp import FastMCP
 
 from config import Settings
 from providers.base import MovieProvider
+from tools.get_movie_details import register_get_movie_details
 from tools.search_movies import register_search_movies
 
 SERVER_NAME = "cinematch-mcp"
@@ -29,4 +30,5 @@ def create_server(settings: Settings, provider: MovieProvider) -> FastMCP:
         streamable_http_path=MCP_PATH,
     )
     register_search_movies(mcp, provider)
+    register_get_movie_details(mcp, provider)
     return mcp

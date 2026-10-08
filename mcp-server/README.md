@@ -23,19 +23,28 @@ providers/
 tools/
 ├── __init__.py      ← READ_ONLY: anotaciones comunes de las tools
 ├── errors.py        ← @handle_provider_errors: excepciones → ToolError legible
-└── search_movies.py ← tool search_movies
+├── search_movies.py ← tool search_movies
+└── get_movie_details.py ← tool get_movie_details
 ```
 
 ### Tools
-| Tool | Parámetros (todos opcionales) | Salida |
+| Tool | Parámetros | Salida |
 |---|---|---|
-| `search_movies` | `genre` (es/en), `keyword` (≤100 car.), `limit` (1-20, default 10) | `{source, results: [MovieSummary]}` |
+| `search_movies` | `genre` (es/en), `keyword` (≤100 car.), `limit` (1-20, default 10); todos opcionales | `{source, results: [MovieSummary]}` |
+| `get_movie_details` | `movie_id` (entero > 0, obligatorio): el `id` que devuelve `search_movies` | `{source, movie: MovieDetails}` |
 
 `search_movies` elige el endpoint de TMDB según los filtros: sin ellos `/movie/popular`; solo `genre`
 → `/discover/movie`; con `keyword` → `/search/movie` (y, si hay `genre`, filtra por `genre_ids`).
 El mapa de géneros (`/genre/movie/list`) se carga una vez por proceso. Un género desconocido
 devuelve un error que lista los válidos; sin coincidencias devuelve `results: []`. En modo mock
 aplica los mismos filtros sobre el catálogo en memoria.
+
+`get_movie_details` hace una sola petición, `/movie/{id}?append_to_response=credits`. `director` son
+los `credits.crew` con `job == "Director"` unidos con `", "` (`null` si no hay); `cast` son los 5
+primeros de `credits.cast` por `order`. `overview` queda en `""` si TMDB no tiene sinopsis en el
+idioma configurado, y `runtime`/`release_date` en `null` si TMDB no los conoce. `movie_id` se valida
+de forma estricta (un `"157336"` o `157336.0` se rechaza) antes de llamar a TMDB; un id inexistente
+devuelve «No se encontró la película con id X». En modo mock sirve las películas del catálogo en memoria.
 
 ### Variables de entorno
 | Variable | Default | Descripción |

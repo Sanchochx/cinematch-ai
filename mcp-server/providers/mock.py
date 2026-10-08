@@ -221,7 +221,7 @@ class MockProvider:
         try:
             return self._movies[movie_id]
         except KeyError:
-            raise MovieNotFoundError() from None
+            raise MovieNotFoundError(movie_id) from None
 
     async def search_movies(
         self, *, genre: str | None, keyword: str | None, limit: int
@@ -241,3 +241,6 @@ class MockProvider:
             # Equivalente a /movie/popular: sin filtros, las mejor valoradas primero.
             movies.sort(key=lambda m: m["vote_average"], reverse=True)
         return [to_summary(movie) for movie in movies[:limit]]
+
+    async def get_movie_details(self, *, movie_id: int) -> MovieDetails:
+        return to_details(self.get_movie(movie_id))

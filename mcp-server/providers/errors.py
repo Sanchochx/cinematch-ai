@@ -21,6 +21,11 @@ class TmdbAuthError(MovieProviderError):
 class MovieNotFoundError(MovieProviderError):
     default_message = "No se encontró la película solicitada"
 
+    def __init__(self, movie_id: int | None = None) -> None:
+        super().__init__(
+            f"No se encontró la película con id {movie_id}" if movie_id is not None else None
+        )
+
 
 class TmdbRateLimitError(MovieProviderError):
     def __init__(self, retry_after: int | None = None) -> None:

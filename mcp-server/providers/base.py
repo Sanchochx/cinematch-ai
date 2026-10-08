@@ -42,7 +42,7 @@ class MovieProvider(Protocol):
     """Fuente de datos de películas.
 
     `source` se copia en cada respuesta de las tools para que el agente sepa si los datos
-    son reales o mock. Las operaciones de consulta se añaden con cada tool (US-MCP-003/004).
+    son reales o mock. Las operaciones de consulta se añaden con cada tool.
     """
 
     async def search_movies(
@@ -51,6 +51,13 @@ class MovieProvider(Protocol):
         """Películas que cumplen los filtros (todos opcionales), como máximo `limit`.
 
         Lanza `UnknownGenreError` si `genre` no existe. Sin filtros devuelve las populares.
+        """
+        ...
+
+    async def get_movie_details(self, *, movie_id: int) -> MovieDetails:
+        """Ficha completa de la película `movie_id` (id de TMDB).
+
+        Lanza `MovieNotFoundError` si no existe.
         """
         ...
 
