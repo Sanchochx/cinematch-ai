@@ -19,6 +19,8 @@ services:
   ai-engine:
     build: ./ai-engine
     container_name: cinematch_ai_engine
+    ports:
+      - "8001:8000"	
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks:
@@ -33,6 +35,8 @@ services:
   mcp-server:
     build: ./mcp-server
     container_name: cinematch_mcp
+    environment:
+      - TMDB_API_KEY=${TMDB_API_KEY}
     networks:
       - ai_network
       - internal_network
