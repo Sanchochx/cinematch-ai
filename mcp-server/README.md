@@ -3,6 +3,63 @@
 Servidor MCP de CineMatch AI: expone tools de solo lectura sobre la API de TMDB al agente del
 `ai-engine`. Arquitectura general en [`.claude/docs/architecture.md`](../.claude/docs/architecture.md).
 
+## Servidor
+- `FastMCP("cinematch-mcp")` con transporte **Streamable HTTP** en `http://<host>:8000/mcp`
+  ([ADR-001](../.claude/docs/decisions/ADR-001-transporte-mcp-streamable-http.md)). No expone
+  ninguna otra ruta HTTP y todas sus tools son de solo lectura.
+- Arranque: `python main.py`.
+
+```
+main.py              ← entrypoint: logging, proveedor, servidor
+config.py            ← Settings desde variables de entorno
+server.py            ← create_server(): instancia FastMCP
+providers/
+├── __init__.py      ← create_provider(): TMDB si hay key, mock si no
+├── base.py          ← MovieProvider (Protocol) + esquema normalizado (MovieSummary, MovieDetails)
+├── errors.py        ← excepciones de dominio con mensajes seguros
+├── genres.py        ← nombres de género (es/en) → id de TMDB, sin distinguir mayúsculas ni tildes
+├── tmdb.py          ← TmdbProvider: httpx.AsyncClient único contra TMDB v3
+└── mock.py          ← MockProvider: 12 películas en memoria
+tools/
+├── __init__.py      ← READ_ONLY: anotaciones comunes de las tools
+├── errors.py        ← @handle_provider_errors: excepciones → ToolError legible
+└── search_movies.py ← tool search_movies
+```
+
+### Tools
+| Tool | Parámetros (todos opcionales) | Salida |
+|---|---|---|
+| `search_movies` | `genre` (es/en), `keyword` (≤100 car.), `limit` (1-20, default 10) | `{source, results: [MovieSummary]}` |
+
+`search_movies` elige el endpoint de TMDB según los filtros: sin ellos `/movie/popular`; solo `genre`
+→ `/discover/movie`; con `keyword` → `/search/movie` (y, si hay `genre`, filtra por `genre_ids`).
+El mapa de géneros (`/genre/movie/list`) se carga una vez por proceso. Un género desconocido
+devuelve un error que lista los válidos; sin coincidencias devuelve `results: []`. En modo mock
+aplica los mismos filtros sobre el catálogo en memoria.
+
+### Variables de entorno
+| Variable | Default | Descripción |
+|---|---|---|
+| `TMDB_API_KEY` | — | Ausente, vacía o solo espacios → **modo mock** (`WARNING TMDB_API_KEY not set — using mock data`) |
+| `MCP_HOST` | `0.0.0.0` | Interfaz de escucha |
+| `MCP_PORT` | `8000` | Puerto |
+| `TMDB_TIMEOUT_SECONDS` | `10` | Timeout de cada petición a TMDB |
+| `TMDB_LANGUAGE` | `es-ES` | Idioma de títulos, sinopsis y géneros |
+
+Cada respuesta de las tools incluye `source: "tmdb" | "mock"`.
+
+### Errores de TMDB
+| Situación | Excepción | Mensaje al agente |
+|---|---|---|
+| 401 | `TmdbAuthError` | credenciales de TMDB inválidas |
+| 404 | `MovieNotFoundError` | No se encontró la película solicitada |
+| 429 | `TmdbRateLimitError` | Límite de peticiones de TMDB alcanzado; reintenta en N s |
+| timeout, red, 5xx, otro 4xx | `TmdbUnavailableError` | TMDB no está disponible en este momento |
+
+Cualquier otra excepción en una tool se registra en el log del servidor y llega al agente como un
+mensaje genérico. La API key viaja como parámetro `api_key`; `TmdbProvider` la redacta (`***`)
+de los logs de `httpx`/`httpcore` y nunca encadena las excepciones de httpx (su texto incluye la URL).
+
 ## Dependencias
 - `requirements.txt` — runtime (lo que instala la imagen Docker):
   - `mcp>=1.30,<2` — SDK oficial de MCP. Se fija la rama **1.x** porque la 2.x renombró `FastMCP`
