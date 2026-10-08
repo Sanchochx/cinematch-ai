@@ -11,7 +11,7 @@
 -->
 
 **Última actualización:** 2026-10-08
-**Versión:** 1.4
+**Versión:** 1.6
 
 ---
 
@@ -21,12 +21,12 @@
 ┌─────────────────────────────────────────────────────────────┐
 │  PROGRESO GLOBAL DEL PROYECTO                               │
 ├─────────────────────────────────────────────────────────────┤
-│  Total Historias de Usuario:     10                         │
-│  ✅ Completadas:                 10                         │
+│  Total Historias de Usuario:     18                         │
+│  ✅ Completadas:                 12                         │
 │  ⏳ En Progreso:                 0                          │
-│  ⏸️  Pendientes:                 0                          │
+│  ⏸️  Pendientes:                 6                          │
 │                                                             │
-│  Progreso: [██████████] 100% (10/10)                          │
+│  Progreso: [██████░░░░] 67% (12/18)                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -59,6 +59,8 @@
 | 01 | Infraestructura base | — | — | — | — | Desplegada fuera del plan (sin US) |
 | 02 | MCP Server | 5 | 5 | 0 | 0 | [██████████] 100% |
 | 03 | AI Engine | 5 | 5 | 0 | 0 | [██████████] 100% |
+| 04 | API Gateway | 4 | 1 | 0 | 3 | [██░░░░░░░░] 25% |
+| 05 | Frontend | 4 | 1 | 0 | 3 | [██░░░░░░░░] 25% |
 
 ---
 
@@ -193,15 +195,96 @@ Orden de ejecución: `001 → 002 → 003 → 004 → 005`.
 
 ---
 
-# 🔭 PRÓXIMAS FASES (sin historias de usuario todavía)
+# 🎯 FASE 4: PUERTA DE ENTRADA — API Gateway y Frontend
 
-Se añadirán a este plan cuando existan sus historias en `context/user_stories/`. Cada una requiere
-antes las decisiones pendientes de `CLAUDE.md`, registradas como ADR en `docs/decisions/`.
+**Objetivo:** Convertir los stubs de `api-gateway/` y `frontend/` en el camino público completo:
+una SPA de chat (React 19 + Vite) que habla solo con un gateway Express, el cual aplica CORS/validación/límites y
+reenvía `POST /api/chat` al ai-engine interno. Ambos servicios con Dockerfile multi-stage sin privilegios e integrados
+en `docker-compose.yml`.
+**Épicas:** 04 API Gateway, 05 Frontend
+**Total US:** 8 (26 pts)
+**Progreso:** [██░░░░░░░░] 25% (2/8)
+**Estado:** Historias aprobadas; en desarrollo (US-GW-001 y US-FE-001 completadas).
 
-| Fase | Épica prevista | Prefijo | Decisiones previas |
-|------|----------------|---------|--------------------|
-| 4 | API Gateway — `POST /api/chat` con validación, CORS y streaming | `US-GW` | Framework HTTP (Express/Fastify) |
-| 5 | Frontend — UI de conversación y fichas de películas | `US-FE` | Bundler (Vite sugerido) |
+---
+
+## EPIC 04: API Gateway — Punto de entrada público hacia el AI Engine
+
+**Prioridad:** CRÍTICA
+**Carpeta:** `context/user_stories/epic_04_api_gateway/`
+**Resumen de la épica:** `context/user_stories/epic_04_api_gateway/README.md`
+
+Orden de ejecución: `001 → 002 → 003 → 004`.
+
+### Historias de Usuario
+
+#### [x] US-GW-001: Proyecto Node/Express base y `GET /health`
+- **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-001_express_setup/US-GW-001_express_setup.md`
+- **Prioridad:** CRÍTICA
+- **Estimación:** 2 pts
+- **Dependencias:** Ninguna
+- **Criterios de Aceptación:** 11
+
+#### [ ] US-GW-002: `POST /api/chat` — validación y proxy al AI Engine
+- **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-002_chat_proxy/US-GW-002_chat_proxy.md`
+- **Prioridad:** CRÍTICA
+- **Estimación:** 5 pts
+- **Dependencias:** US-GW-001
+- **Criterios de Aceptación:** 10
+
+#### [ ] US-GW-003: CORS restrictivo y endurecimiento HTTP del gateway
+- **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-003_cors_security/US-GW-003_cors_security.md`
+- **Prioridad:** CRÍTICA
+- **Estimación:** 3 pts
+- **Dependencias:** US-GW-001
+- **Criterios de Aceptación:** 10
+
+#### [ ] US-GW-004: Dockerfile multi-stage del gateway e integración en Compose
+- **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-004_dockerfile_compose/US-GW-004_dockerfile_compose.md`
+- **Prioridad:** ALTA
+- **Estimación:** 3 pts
+- **Dependencias:** US-GW-002, US-GW-003
+- **Criterios de Aceptación:** 9
+
+---
+
+## EPIC 05: Frontend — Ventana de chat y recomendaciones de películas
+
+**Prioridad:** CRÍTICA
+**Carpeta:** `context/user_stories/epic_05_frontend/`
+**Resumen de la épica:** `context/user_stories/epic_05_frontend/README.md`
+
+Orden de ejecución: `001 → 002 → 003 → 004`.
+
+### Historias de Usuario
+
+#### [x] US-FE-001: Proyecto Vite + React 19 + TypeScript strict, tokens y tooling
+- **Archivo:** `context/user_stories/epic_05_frontend/US-FE-001_vite_react_setup/US-FE-001_vite_react_setup.md`
+- **Prioridad:** CRÍTICA
+- **Estimación:** 2 pts
+- **Dependencias:** Ninguna
+- **Criterios de Aceptación:** 10
+
+#### [ ] US-FE-002: Feature `chat` — modelos, servicio HTTP y hook `useChat`
+- **Archivo:** `context/user_stories/epic_05_frontend/US-FE-002_chat_service_hook/US-FE-002_chat_service_hook.md`
+- **Prioridad:** CRÍTICA
+- **Estimación:** 3 pts
+- **Dependencias:** US-FE-001 (contrato de US-GW-002)
+- **Criterios de Aceptación:** 9
+
+#### [ ] US-FE-003: UI de chat accesible con recomendaciones
+- **Archivo:** `context/user_stories/epic_05_frontend/US-FE-003_chat_ui/US-FE-003_chat_ui.md`
+- **Prioridad:** CRÍTICA
+- **Estimación:** 5 pts
+- **Dependencias:** US-FE-002
+- **Criterios de Aceptación:** 19
+
+#### [ ] US-FE-004: Dockerfile multi-stage (Vite → nginx sin privilegios) e integración en Compose
+- **Archivo:** `context/user_stories/epic_05_frontend/US-FE-004_dockerfile_compose/US-FE-004_dockerfile_compose.md`
+- **Prioridad:** ALTA
+- **Estimación:** 3 pts
+- **Dependencias:** US-FE-003, US-GW-004
+- **Criterios de Aceptación:** 9
 
 ---
 
@@ -209,7 +292,7 @@ antes las decisiones pendientes de `CLAUDE.md`, registradas como ADR en `docs/de
 
 ### Cómo usar este plan
 
-1. **Seguir el orden de las fases** — la siguiente fase pendiente es la Fase 4 (sin historias de usuario todavía)
+1. **Seguir el orden de las fases** — la siguiente fase pendiente es la Fase 4 (en curso: 2/8)
 2. **Trabajo incremental** — completar una US antes de avanzar
 3. **Marcar progreso** con el checkbox del título: `[ ]` pendiente, `[~]` en progreso (solo UNA), `[x]` completada
 4. **Actualizar métricas** — al cerrar cada US: dashboard, fila de la épica en la tabla, barra de la fase y "Última actualización"
@@ -217,8 +300,14 @@ antes las decisiones pendientes de `CLAUDE.md`, registradas como ADR en `docs/de
 
 ### Riesgos conocidos (fuera del alcance de las US actuales)
 
-- **`TMDB_API_KEY` no llega al contenedor:** `docker-compose.yml` no la pasa al `mcp-server`, así que en Docker el servidor arrancará en modo mock hasta que se añada (`env_file`/`environment`).
 - **Redes inconsistentes con la documentación:** `docs/architecture.md` dice que el mcp-server solo está en `ai_network` (sin internet), pero el compose también lo conecta a `internal_network` (con egress). Resolver en un ADR aparte.
+
+### Cambios de seguridad recientes
+
+- **Puerto del ai-engine cerrado (2026-10-08):** se eliminó el mapeo `8001:8000` de `docker-compose.yml`. El `ai-engine`
+  vuelve a ser accesible **solo** desde `internal_network` (`http://ai-engine:8000`); el único camino público es
+  frontend → api-gateway. Las pruebas de la Fase 3 que usaban el puerto 8001 deben hacerse con `docker compose exec`.
+  El riesgo previo sobre `TMDB_API_KEY` se da por cerrado: el compose ya la pasa al `mcp-server` y la integración real con TMDB fue validada en la Fase 3.
 
 ### Referencias del proyecto
 
