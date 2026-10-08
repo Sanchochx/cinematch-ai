@@ -19,9 +19,16 @@ services:
   ai-engine:
     build: ./ai-engine
     container_name: cinematch_ai_engine
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks:
       - internal_network
       - ai_network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
 
   mcp-server:
     build: ./mcp-server
