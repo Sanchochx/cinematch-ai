@@ -20,6 +20,7 @@ class Settings:
     llm_model: str = DEFAULT_LLM_MODEL
     llm_temperature: float = DEFAULT_LLM_TEMPERATURE
     llm_timeout_seconds: float = DEFAULT_LLM_TIMEOUT_SECONDS
+    enable_docs: bool = False
 
 
 def _parse_timeout(raw: str | None) -> float:
@@ -42,4 +43,5 @@ def load_settings(env: Mapping[str, str] | None = None) -> Settings:
         mcp_timeout_seconds=_parse_timeout(env.get("MCP_TIMEOUT_SECONDS")),
         openai_api_key=(env.get("OPENAI_API_KEY") or "").strip(),
         llm_model=(env.get("LLM_MODEL") or "").strip() or DEFAULT_LLM_MODEL,
+        enable_docs=(env.get("ENABLE_DOCS") or "").strip().lower() in {"1", "true", "yes"},
     )
