@@ -1,10 +1,11 @@
 """Tool `search_movies`: candidatas por género y/o palabra clave."""
 
-from typing import Annotated, TypedDict
+from typing import Annotated
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.exceptions import ToolError
 from pydantic import Field
+from typing_extensions import TypedDict
 
 from providers.base import MovieProvider, MovieSummary, ProviderSource
 from tools import READ_ONLY

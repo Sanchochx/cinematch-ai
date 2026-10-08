@@ -3,7 +3,9 @@
 Las tools dependen solo de estos tipos, nunca de una implementación concreta.
 """
 
-from typing import Literal, Protocol, TypedDict
+from typing import Literal, Protocol
+
+from typing_extensions import TypedDict
 
 ProviderSource = Literal["tmdb", "mock"]
 

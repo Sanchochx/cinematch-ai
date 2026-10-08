@@ -1,7 +1,10 @@
 # Etapa 1: Build
 FROM python:3.11-slim AS builder
 WORKDIR /app
-# Aquí Claude Code agregará el COPY requirements.txt y RUN pip install
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Etapa 2: Producción
 FROM python:3.11-slim
@@ -16,6 +19,9 @@ RUN chown -R appuser:appgroup /app
 
 # Cambiar al usuario sin privilegios
 USER appuser
+
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 COPY --chown=appuser:appgroup . .
 

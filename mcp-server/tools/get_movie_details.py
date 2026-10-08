@@ -1,9 +1,10 @@
 """Tool `get_movie_details`: sinopsis, director y reparto de una película."""
 
-from typing import Annotated, TypedDict
+from typing import Annotated
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
+from typing_extensions import TypedDict
 
 from providers.base import MovieDetails, MovieProvider, ProviderSource
 from tools import READ_ONLY

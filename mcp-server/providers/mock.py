@@ -4,7 +4,7 @@ Los ids coinciden con los de TMDB para que el comportamiento sea el mismo al act
 Títulos y géneros van en español, como los devuelve TMDB con `language=es-ES`.
 """
 
-from typing import TypedDict
+from typing_extensions import TypedDict
 
 from providers.base import CastMember, MovieDetails, MovieSummary, ProviderSource
 from providers.errors import MovieNotFoundError, UnknownGenreError
