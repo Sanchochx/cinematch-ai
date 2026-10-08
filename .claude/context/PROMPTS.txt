@@ -1,0 +1,1 @@
+A partir de su contenido, crea las nuevas historias de usuario siguiendo exactamente el mismo formato, estructura y convenciones de los archivos ya existentes en la carpeta user_stories/. Genera un archivo separado por historia dentro de esa misma carpeta. Y actualiza el archivo IMPLEMENTATION_PLAN agregando las nuevas historias de usuario asi como estan en el documento.
