@@ -1,23 +1,30 @@
-# Etapa 1: Build
+# Etapa 1: Build — instala dependencias en un venv aislado
 FROM python:3.11-slim AS builder
-WORKDIR /app
-# Aquí Claude Code agregará el COPY requirements.txt y RUN pip install
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+WORKDIR /build
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Etapa 2: Producción
 FROM python:3.11-slim
 
-# Comandos de Linux: Crear un grupo y un usuario de sistema (-r) sin directorio home (-M)
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Usuario de sistema (-r) sin directorio home (-M)
+RUN groupadd -r appgroup && useradd -r -M -g appgroup appuser
+
+COPY --from=builder /opt/venv /opt/venv
 
 WORKDIR /app
-
-# Cambiar propiedad del directorio al nuevo usuario
-RUN chown -R appuser:appgroup /app
+COPY --chown=appuser:appgroup . .
 
 # Cambiar al usuario sin privilegios
 USER appuser
 
-COPY --chown=appuser:appgroup . .
-
 EXPOSE 8000
-CMD ["python", "main.py"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
