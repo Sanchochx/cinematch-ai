@@ -11,7 +11,7 @@
 -->
 
 **Última actualización:** 2026-10-08
-**Versión:** 1.3
+**Versión:** 1.4
 
 ---
 
@@ -22,11 +22,11 @@
 │  PROGRESO GLOBAL DEL PROYECTO                               │
 ├─────────────────────────────────────────────────────────────┤
 │  Total Historias de Usuario:     10                         │
-│  ✅ Completadas:                 9                          │
+│  ✅ Completadas:                 10                         │
 │  ⏳ En Progreso:                 0                          │
-│  ⏸️  Pendientes:                 1                          │
+│  ⏸️  Pendientes:                 0                          │
 │                                                             │
-│  Progreso: [█████████░] 90% (9/10)                           │
+│  Progreso: [██████████] 100% (10/10)                          │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -58,7 +58,7 @@
 |------|--------|----------|-------------|-------------|------------|----------|
 | 01 | Infraestructura base | — | — | — | — | Desplegada fuera del plan (sin US) |
 | 02 | MCP Server | 5 | 5 | 0 | 0 | [██████████] 100% |
-| 03 | AI Engine | 5 | 4 | 0 | 1 | [████████░░] 80% |
+| 03 | AI Engine | 5 | 5 | 0 | 0 | [██████████] 100% |
 
 ---
 
@@ -136,12 +136,13 @@ final para validar la imagen con el servidor ya funcional.
 
 ---
 
-# 🎯 FASE 3: MOTOR COGNITIVO — AI Engine
+# 🎯 FASE 3: MOTOR COGNITIVO — AI Engine ✅
 
 **Objetivo:** Convertir el stub de `ai-engine/` en un agente LangGraph que razona con un LLM, consume dinámicamente las tools del mcp-server y se expone como API FastAPI (`POST /chat`).
 **Épicas:** 03 AI Engine
 **Total US:** 5 (23 pts)
-**Progreso:** [████████░░] 80% (4/5)
+**Progreso:** [██████████] 100% (5/5)
+**Resumen:** `context/summaries/phase-3-resume.md`
 
 ---
 
@@ -183,7 +184,7 @@ Orden de ejecución: `001 → 002 → 003 → 004 → 005`.
 - **Dependencias:** US-AI-003
 - **Criterios de Aceptación:** 11
 
-#### [ ] US-AI-005: Dockerfile del AI Engine con venv y arranque de uvicorn
+#### [x] US-AI-005: Dockerfile del AI Engine con venv y arranque de uvicorn
 - **Archivo:** `context/user_stories/epic_03_ai_engine/US-AI-005_dockerfile_dependencies/US-AI-005_dockerfile_dependencies.md`
 - **Prioridad:** ALTA
 - **Estimación:** 3 pts
@@ -208,7 +209,7 @@ antes las decisiones pendientes de `CLAUDE.md`, registradas como ADR en `docs/de
 
 ### Cómo usar este plan
 
-1. **Seguir el orden de las fases** — la siguiente fase pendiente es la Fase 3
+1. **Seguir el orden de las fases** — la siguiente fase pendiente es la Fase 4 (sin historias de usuario todavía)
 2. **Trabajo incremental** — completar una US antes de avanzar
 3. **Marcar progreso** con el checkbox del título: `[ ]` pendiente, `[~]` en progreso (solo UNA), `[x]` completada
 4. **Actualizar métricas** — al cerrar cada US: dashboard, fila de la épica en la tabla, barra de la fase y "Última actualización"

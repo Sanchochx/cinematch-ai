@@ -18,9 +18,7 @@ services:
 
   ai-engine:
     build: ./ai-engine
-    container_name: cinematch_ai_engine
-    ports:
-      - "8001:8000"	
+    container_name: cinematch_ai_engine	
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     networks:
