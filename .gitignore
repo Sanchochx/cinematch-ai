@@ -1,5 +1,6 @@
 .env
 .claude/
+!/.claude/**/*.md
 
 # Python
 .venv/

@@ -44,16 +44,16 @@ api-gateway:
 - `.dockerignore` con `node_modules`, `tests`, `.env*`, `.git`.
 
 ## Criterios de aceptación
-- [ ] La etapa `builder` copia `package*.json` y ejecuta `npm ci --omit=dev`; la imagen final no incluye devDependencies ni tests.
-- [ ] Se mantienen **dos etapas** y la ejecución como usuario no-root (`USER node`); `docker compose exec api-gateway id` ≠ uid 0.
-- [ ] `CMD` arranca `src/server.js`; `EXPOSE 3000`; `NODE_ENV=production`.
-- [ ] `HEALTHCHECK` contra `/health` (el contenedor pasa a `healthy`).
-- [ ] `docker-compose.yml` define `AI_ENGINE_URL`, `CORS_ORIGIN` (con valor por defecto) y `PORT` para el gateway;
+- [x] La etapa `builder` copia `package*.json` y ejecuta `npm ci --omit=dev`; la imagen final no incluye devDependencies ni tests.
+- [x] Se mantienen **dos etapas** y la ejecución como usuario no-root (`USER node`); `docker compose exec api-gateway id` ≠ uid 0.
+- [x] `CMD` arranca `src/server.js`; `EXPOSE 3000`; `NODE_ENV=production`.
+- [x] `HEALTHCHECK` contra `/health` (el contenedor pasa a `healthy`).
+- [x] `docker-compose.yml` define `AI_ENGINE_URL`, `CORS_ORIGIN` (con valor por defecto) y `PORT` para el gateway;
   conserva `ports: "3000:3000"` y las redes `public_network` + `internal_network`.
-- [ ] `depends_on` del `ai-engine` (orden de arranque; la tolerancia a caídas la cubre el 503 del gateway).
-- [ ] Ninguna credencial (`OPENAI_API_KEY`, `TMDB_API_KEY`) llega al contenedor del gateway.
-- [ ] `.dockerignore` presente; la imagen final es ligera (se documenta el tamaño obtenido).
-- [ ] `docker compose build api-gateway` termina sin errores ni warnings de npm críticos.
+- [x] `depends_on` del `ai-engine` (orden de arranque; la tolerancia a caídas la cubre el 503 del gateway).
+- [x] Ninguna credencial (`OPENAI_API_KEY`, `TMDB_API_KEY`) llega al contenedor del gateway.
+- [x] `.dockerignore` presente; la imagen final es ligera (se documenta el tamaño obtenido).
+- [x] `docker compose build api-gateway` termina sin errores ni warnings de npm críticos.
 
 ## Fuera de alcance
 - Orquestación avanzada (réplicas, balanceador, TLS), CI/CD y publicación de imágenes.

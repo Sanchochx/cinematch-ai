@@ -6,7 +6,7 @@ conversa con el usuario, entiende sus gustos y consulta TMDB a través de un ser
 para devolver recomendaciones fundamentadas en datos reales.
 
 Arquitectura de **microservicios contenerizados** (Docker Compose) con aislamiento de redes.
-La infraestructura base (contenedores + redes) ya está desplegada; los servicios aún son stubs.
+Los cuatro servicios están implementados y orquestados con Docker Compose (Fase 4 completada).
 
 ## Stack
 | Servicio | Carpeta | Tecnología | Puerto interno |
@@ -18,12 +18,17 @@ La infraestructura base (contenedores + redes) ya está desplegada; los servicio
 | Datos externos | — | API de TMDB | — |
 
 **Pendiente de decidir** (registrar como ADR en `docs/decisions/` al decidirlo):
-- Bundler/servidor del frontend (Vite sugerido) y framework HTTP del gateway (Express/Fastify)
-- Framework HTTP del AI Engine (FastAPI sugerido) y proveedor de LLM
-- Persistencia (historial de conversación, perfiles de usuario): ¿base de datos? ¿checkpointer de LangGraph?
+- Persistencia de historial y perfiles de usuario (hoy sin checkpointer: el cliente envía `history`)
+- Autenticación de usuarios
+- Restricción de egress (proxy con allowlist a OpenAI y TMDB) para ai-engine y mcp-server
 
 **Decidido:**
 - Transporte MCP entre AI Engine y MCP Server: Streamable HTTP en `/mcp` ([ADR-001](docs/decisions/ADR-001-transporte-mcp-streamable-http.md))
+- LLM (OpenAI) y agente sin checkpointer ([ADR-002](docs/decisions/ADR-002-proveedor-llm-y-agente-sin-checkpointer.md))
+- AI Engine: FastAPI + uvicorn ([ADR-003](docs/decisions/ADR-003-fastapi-uvicorn-ai-engine.md))
+- API Gateway: Express ([ADR-004](docs/decisions/ADR-004-express-api-gateway.md))
+- Frontend: Vite + React ([ADR-005](docs/decisions/ADR-005-vite-react-frontend.md)), servido con nginx-unprivileged
+- Variable de build del frontend: `VITE_API_URL` (build arg en Compose, por defecto `http://localhost:3000`); la CSP de `frontend/nginx.conf` debe coincidir
 
 ## Arquitectura y redes
 ```
@@ -32,8 +37,9 @@ La infraestructura base (contenedores + redes) ya está desplegada; los servicio
                                 └──────────────────┘
 ```
 - `public_network`: frontend ↔ api-gateway (expuestos al host)
-- `internal_network`: api-gateway ↔ ai-engine (el ai-engine NO se expone al host)
-- `ai_network` (`internal: true`, sin internet): ai-engine ↔ mcp-server
+- `internal_network`: api-gateway ↔ ai-engine (el ai-engine NO se expone al host). Bridge con egress: ai-engine (LLM) y mcp-server (TMDB) también están aquí para salir a internet
+- `ai_network` (`internal: true`, sin internet): tráfico ai-engine ↔ mcp-server
+- Solo `frontend` (5173) y `api-gateway` (3000) publican puertos; ai-engine y mcp-server nunca
 
 Reglas:
 - El frontend **solo** habla con el api-gateway. Nunca con ai-engine ni mcp-server.

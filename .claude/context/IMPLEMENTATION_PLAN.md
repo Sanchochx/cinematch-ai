@@ -11,7 +11,7 @@
 -->
 
 **Última actualización:** 2026-10-08
-**Versión:** 1.6
+**Versión:** 1.7
 
 ---
 
@@ -22,11 +22,11 @@
 │  PROGRESO GLOBAL DEL PROYECTO                               │
 ├─────────────────────────────────────────────────────────────┤
 │  Total Historias de Usuario:     18                         │
-│  ✅ Completadas:                 16                         │
+│  ✅ Completadas:                 18                         │
 │  ⏳ En Progreso:                 0                          │
-│  ⏸️  Pendientes:                 2                          │
+│  ⏸️  Pendientes:                 0                          │
 │                                                             │
-│  Progreso: [█████████░] 89% (16/18)                         │
+│  Progreso: [██████████] 100% (18/18)                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -59,8 +59,8 @@
 | 01 | Infraestructura base | — | — | — | — | Desplegada fuera del plan (sin US) |
 | 02 | MCP Server | 5 | 5 | 0 | 0 | [██████████] 100% |
 | 03 | AI Engine | 5 | 5 | 0 | 0 | [██████████] 100% |
-| 04 | API Gateway | 4 | 3 | 0 | 1 | [███████░░░] 75% |
-| 05 | Frontend | 4 | 3 | 0 | 1 | [███████░░░] 75% |
+| 04 | API Gateway | 4 | 4 | 0 | 0 | [██████████] 100% |
+| 05 | Frontend | 4 | 4 | 0 | 0 | [██████████] 100% |
 
 ---
 
@@ -195,7 +195,7 @@ Orden de ejecución: `001 → 002 → 003 → 004 → 005`.
 
 ---
 
-# 🎯 FASE 4: PUERTA DE ENTRADA — API Gateway y Frontend
+# 🎯 FASE 4: PUERTA DE ENTRADA — API Gateway y Frontend ✅
 
 **Objetivo:** Convertir los stubs de `api-gateway/` y `frontend/` en el camino público completo:
 una SPA de chat (React 19 + Vite) que habla solo con un gateway Express, el cual aplica CORS/validación/límites y
@@ -203,8 +203,8 @@ reenvía `POST /api/chat` al ai-engine interno. Ambos servicios con Dockerfile m
 en `docker-compose.yml`.
 **Épicas:** 04 API Gateway, 05 Frontend
 **Total US:** 8 (26 pts)
-**Progreso:** [███████░░░] 75% (6/8)
-**Estado:** Historias aprobadas; en desarrollo (US-GW-001/002/003 y US-FE-001/002/003 completadas; pruebas manuales y Lighthouse a cargo del Tech Lead con el stack Docker completo).
+**Progreso:** [██████████] 100% (8/8)
+**Estado:** Completada. Resumen en `context/summaries/phase-4-resume.md`.
 
 ---
 
@@ -239,7 +239,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 - **Dependencias:** US-GW-001
 - **Criterios de Aceptación:** 10
 
-#### [ ] US-GW-004: Dockerfile multi-stage del gateway e integración en Compose
+#### [x] US-GW-004: Dockerfile multi-stage del gateway e integración en Compose
 - **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-004_dockerfile_compose/US-GW-004_dockerfile_compose.md`
 - **Prioridad:** ALTA
 - **Estimación:** 3 pts
@@ -279,7 +279,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 - **Dependencias:** US-FE-002
 - **Criterios de Aceptación:** 19
 
-#### [ ] US-FE-004: Dockerfile multi-stage (Vite → nginx sin privilegios) e integración en Compose
+#### [x] US-FE-004: Dockerfile multi-stage (Vite → nginx sin privilegios) e integración en Compose
 - **Archivo:** `context/user_stories/epic_05_frontend/US-FE-004_dockerfile_compose/US-FE-004_dockerfile_compose.md`
 - **Prioridad:** ALTA
 - **Estimación:** 3 pts
@@ -292,7 +292,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 
 ### Cómo usar este plan
 
-1. **Seguir el orden de las fases** — la siguiente fase pendiente es la Fase 4 (en curso: 2/8)
+1. **Seguir el orden de las fases** — todas las fases (1–4) están completadas
 2. **Trabajo incremental** — completar una US antes de avanzar
 3. **Marcar progreso** con el checkbox del título: `[ ]` pendiente, `[~]` en progreso (solo UNA), `[x]` completada
 4. **Actualizar métricas** — al cerrar cada US: dashboard, fila de la épica en la tabla, barra de la fase y "Última actualización"
@@ -300,7 +300,8 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 
 ### Riesgos conocidos (fuera del alcance de las US actuales)
 
-- **Redes inconsistentes con la documentación:** `docs/architecture.md` dice que el mcp-server solo está en `ai_network` (sin internet), pero el compose también lo conecta a `internal_network` (con egress). Resolver en un ADR aparte.
+- **Egress sin restricción:** ai-engine y mcp-server comparten `internal_network` (con salida a internet) para alcanzar el LLM y TMDB. Documentado en `docs/architecture.md`; un proxy de egress con allowlist requeriría un ADR.
+- **Healthchecks** de ai-engine y mcp-server pendientes; verificación CORS en navegador real, Lighthouse y E2E (Playwright) sin ejecutar.
 
 ### Cambios de seguridad recientes
 

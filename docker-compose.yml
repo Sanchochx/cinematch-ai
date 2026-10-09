@@ -1,29 +1,43 @@
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
     container_name: cinematch_frontend
     ports:
       - "5173:3000" # Exponemos al host
     networks:
       - public_network
+    depends_on:
+      - api-gateway
 
   api-gateway:
     build: ./api-gateway
     container_name: cinematch_gateway
+    environment:
+      - PORT=3000
+      - AI_ENGINE_URL=http://ai-engine:8000
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
     ports:
       - "3000:3000" # Exponemos al host para pruebas locales
     networks:
       - public_network
       - internal_network
+    depends_on:
+      - ai-engine
 
   ai-engine:
     build: ./ai-engine
-    container_name: cinematch_ai_engine	
+    container_name: cinematch_ai_engine
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MCP_SERVER_URL=http://mcp-server:8000/mcp
     networks:
       - internal_network
       - ai_network
+    depends_on:
+      - mcp-server
     deploy:
       resources:
         limits:

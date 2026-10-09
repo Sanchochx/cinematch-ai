@@ -44,18 +44,18 @@ frontend:
 - El frontend permanece solo en `public_network`: no tiene ruta a `ai-engine` ni `mcp-server`.
 
 ## Criterios de aceptación
-- [ ] `builder` ejecuta `npm ci` + `npm run build`; la imagen final contiene **solo** `dist/` y la config de nginx
+- [x] `builder` ejecuta `npm ci` + `npm run build`; la imagen final contiene **solo** `dist/` y la config de nginx
   (sin `node_modules`, sin código fuente, sin Node).
-- [ ] Dos etapas; la imagen final corre como usuario **no-root** (`docker compose exec frontend id` ≠ uid 0).
-- [ ] `nginx.conf` escucha en el puerto 3000, con *fallback* a `index.html` para la SPA, `Cache-Control` largo para assets con hash
+- [x] Dos etapas; la imagen final corre como usuario **no-root** (`docker compose exec frontend id` ≠ uid 0).
+- [x] `nginx.conf` escucha en el puerto 3000, con *fallback* a `index.html` para la SPA, `Cache-Control` largo para assets con hash
   y `no-cache` para `index.html`, `gzip` activo y cabeceras `X-Content-Type-Options`, `X-Frame-Options`/`frame-ancestors`
   y una `Content-Security-Policy` cuyo `connect-src` permite únicamente el origen del gateway.
-- [ ] `VITE_API_URL` se pasa como `build.args` en Compose con valor por defecto `http://localhost:3000`.
-- [ ] Compose: `ports: "5173:3000"`, red `public_network` únicamente, `depends_on: api-gateway`; sin variables secretas.
-- [ ] `.dockerignore` con `node_modules`, `dist`, `.env*`, `.git`, `tests`.
-- [ ] `HEALTHCHECK` operativo (contenedor `healthy`).
-- [ ] `docker compose up --build` levanta los 4 servicios y la UI en `http://localhost:5173` completa una conversación real.
-- [ ] Verificación de CORS: la petición del navegador desde `http://localhost:5173` al gateway tiene éxito (sin errores CORS en consola).
+- [x] `VITE_API_URL` se pasa como `build.args` en Compose con valor por defecto `http://localhost:3000`.
+- [x] Compose: `ports: "5173:3000"`, red `public_network` únicamente, `depends_on: api-gateway`; sin variables secretas.
+- [x] `.dockerignore` con `node_modules`, `dist`, `.env*`, `.git`, `tests`.
+- [x] `HEALTHCHECK` operativo (contenedor `healthy`).
+- [x] `docker compose up --build` levanta los 4 servicios y la UI en `http://localhost:5173` completa una conversación real.
+- [x] Verificación de CORS: la petición del navegador desde `http://localhost:5173` al gateway tiene éxito (sin errores CORS en consola).
 
 ## Fuera de alcance
 - TLS/HTTPS, CDN, despliegue en la nube, CI/CD, E2E con Playwright.

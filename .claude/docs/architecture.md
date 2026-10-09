@@ -8,24 +8,39 @@ qué datos necesita y los obtiene llamando tools del mcp-server, que a su vez co
 Cada servicio corre en su propio contenedor (Docker Compose), con imágenes multi-stage
 y usuario sin privilegios.
 
-## Diagrama de componentes y redes
+## Topología de red real (Zero Trust por segmentación)
 ```
-              ┌──────────── public_network ────────────┐
-[Navegador] ─►│ frontend (React 19)  ─►  api-gateway   │
-   host:5173  └────────────────────────── (Node) ──────┘ host:3000
-                                             │
-              ┌──────────── internal_network ┼─────────┐
-              │                         ai-engine      │
-              │                    (Python + LangGraph)│
-              └──────────────────────────────┼─────────┘
-                                             │ MCP
-              ┌─────── ai_network (internal: sin internet) ─┐
-              │                         mcp-server          │
-              │                   (Python + SDK MCP)        │
-              └──────────────────────────────┼──────────────┘
-                                             ▼
-                                        API de TMDB
+                         host
+                  :5173        :3000
+                    │            │
+  ┌──────── public_network ──────┼──────┐
+  │  frontend (nginx, uid 101) ──┤      │   El navegador solo ve estos dos puertos
+  │                      api-gateway    │
+  └──────────────────────────┬──────────┘
+                             │ http://ai-engine:8000
+  ┌──────── internal_network ┼──────────┐   bridge con salida a internet (egress)
+  │              ai-engine ──┘          │   ai-engine → LLM (OpenAI)
+  │              mcp-server             │   mcp-server → TMDB
+  └─────────┬──────────────┬────────────┘
+  ┌──────── ai_network (internal: true, sin internet) ──┐
+  │   ai-engine ── http://mcp-server:8000/mcp ── mcp-server │
+  └─────────────────────────────────────────────────────┘
 ```
+
+| Servicio | Redes | Puerto publicado | Secretos |
+|---|---|---|---|
+| frontend | `public_network` | 5173 → 3000 | ninguno |
+| api-gateway | `public_network`, `internal_network` | 3000 | ninguno |
+| ai-engine | `internal_network`, `ai_network` | — | `OPENAI_API_KEY` |
+| mcp-server | `ai_network`, `internal_network` | — | `TMDB_API_KEY` |
+
+Principios aplicados:
+- **El gateway es el único puente** entre el exterior y el motor de IA; el frontend no tiene ruta a ai-engine ni mcp-server.
+- **ai-engine y mcp-server no publican puertos** al host; solo son alcanzables por nombre de servicio dentro de sus redes.
+- **El tráfico agente ↔ tools viaja por `ai_network`**, que no tiene salida a internet.
+- **Matiz importante:** ambos servicios también están en `internal_network` (bridge normal) porque necesitan egress
+  (LLM y TMDB). Por tanto, el aislamiento es de *entrada* (nadie externo los alcanza), no de *salida*. Restringir el
+  egress (proxy con allowlist a `api.openai.com` y `api.themoviedb.org`) queda como mejora futura.
 
 ## Responsabilidades por servicio
 
@@ -39,7 +54,7 @@ y usuario sin privilegios.
 ## Flujo de una recomendación
 1. El usuario escribe "algo como Interstellar pero más corto" en el frontend.
 2. El frontend hace `POST /api/chat` al api-gateway.
-3. El gateway valida el body y lo reenvía a `http://ai-engine:8000`.
+3. El gateway valida el body (Zod), aplica CORS y rate limit, y lo reenvía a `http://ai-engine:8000`.
 4. El agente LangGraph extrae preferencias y decide qué tools llamar.
 5. El ai-engine invoca tools en el mcp-server (`search_movies`, `get_similar_movies`…).
 6. El mcp-server consulta TMDB y devuelve datos normalizados.
@@ -48,19 +63,17 @@ y usuario sin privilegios.
 
 ## Consideraciones de seguridad
 - **Exposición mínima**: solo frontend y gateway publican puertos al host.
-- **Secretos por servicio**: `TMDB_API_KEY` solo en mcp-server; la key del LLM solo en ai-engine.
-- **Superficie del agente**: el agente solo puede actuar mediante las tools MCP definidas;
-  las tools son de solo lectura.
-- **Validación**: el gateway valida y limita tamaño del input antes de llegar al LLM.
+- **Secretos por servicio**: `TMDB_API_KEY` solo en mcp-server; la key del LLM solo en ai-engine; el gateway y el frontend no reciben ninguna.
+- **Superficie del agente**: el agente solo puede actuar mediante las tools MCP definidas; las tools son de solo lectura.
+- **Gateway**: validación Zod (límites de tamaño, claves extra descartadas), Helmet, CORS con allowlist exacta (`*` rechazado), rate limit por IP en `/api/chat`, errores genéricos.
+- **Frontend**: nginx-unprivileged (uid 101), CSP con `connect-src` limitado al gateway, `frame-ancestors 'none'`, `X-Content-Type-Options`, `X-Frame-Options`.
+- **Contenedores**: imágenes multi-stage, todas con usuario sin privilegios.
 - Autenticación de usuarios: pendiente de decidir.
 
-## ⚠️ Problemas abiertos
-- **El mcp-server no puede alcanzar TMDB**: está solo en `ai_network`, que es
-  `internal: true` (sin salida a internet). Opciones: (a) conectarlo además a una red
-  con salida solo para egress, (b) un proxy de egress con allowlist a `api.themoviedb.org`.
-  Decidir y registrar como ADR.
-- **El ai-engine necesita salida a internet** para el proveedor de LLM: hoy la tiene vía
-  `internal_network` (bridge normal). Si se quiere restringir, usar también un proxy de egress.
+## ⚠️ Puntos abiertos
+- **Egress sin restricción** en ai-engine y mcp-server (ver topología). Candidato a ADR: proxy de egress con allowlist.
+- **Healthchecks** de ai-engine y mcp-server pendientes; `depends_on` solo ordena el arranque.
+- **CSP del frontend** acoplada a `VITE_API_URL` (`frontend/nginx.conf`).
 
 ## Decisiones pendientes
 Ver lista en `CLAUDE.md` → Stack → "Pendiente de decidir". Cada decisión se registra en
