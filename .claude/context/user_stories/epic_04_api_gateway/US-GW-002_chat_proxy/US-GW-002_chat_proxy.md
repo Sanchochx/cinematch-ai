@@ -29,23 +29,23 @@
 ```
 
 ## Criterios de aceptación
-- [ ] Validación con zod: `message` obligatorio, `string`, `trim()` no vacío, ≤ 2000 caracteres;
+- [x] Validación con zod: `message` obligatorio, `string`, `trim()` no vacío, ≤ 2000 caracteres;
   `history` opcional (por defecto `[]`), ≤ 20 ítems, `role` ∈ {`user`,`assistant`}, `content` 1–2000 caracteres.
   Los límites viven en una única constante del gateway.
-- [ ] Body inválido (campo faltante, tipo erróneo, rol inválido, JSON malformado) → `400` con `error: "invalid_request"`
+- [x] Body inválido (campo faltante, tipo erróneo, rol inválido, JSON malformado) → `400` con `error: "invalid_request"`
   y mensaje genérico (sin eco del payload).
-- [ ] `Content-Type` distinto de `application/json` → `415`.
-- [ ] Caso feliz: reenvía **solo** `{message, history}` ya validados/saneados y devuelve `200 {"reply": string}`.
+- [x] `Content-Type` distinto de `application/json` → `415`.
+- [x] Caso feliz: reenvía **solo** `{message, history}` ya validados/saneados y devuelve `200 {"reply": string}`.
   Cualquier campo extra del cliente se descarta (no se hace *passthrough* del body).
-- [ ] Respuesta del ai-engine con forma inesperada (sin `reply` string) → `502 upstream_error`.
-- [ ] Mapeo de errores aguas abajo: ai-engine inalcanzable / `503` → `503 upstream_unavailable`;
+- [x] Respuesta del ai-engine con forma inesperada (sin `reply` string) → `502 upstream_error`.
+- [x] Mapeo de errores aguas abajo: ai-engine inalcanzable / `503` → `503 upstream_unavailable`;
   `502`/`5xx` → `502 upstream_error`; timeout → `504 timeout`; `422` del ai-engine → `502` (el gateway ya validó,
   por lo que es un desajuste de contrato); error inesperado → `500 internal_error`.
-- [ ] Los mensajes de error **no** exponen trazas, URL internas (`ai-engine:8000`), cabeceras ni detalles del upstream.
-- [ ] No se reenvían cabeceras del cliente (`Cookie`, `Authorization`, etc.) al ai-engine.
-- [ ] Tests con cliente falso (Supertest): éxito, 400 (vacío, demasiado largo, history inválido, JSON roto),
+- [x] Los mensajes de error **no** exponen trazas, URL internas (`ai-engine:8000`), cabeceras ni detalles del upstream.
+- [x] No se reenvían cabeceras del cliente (`Cookie`, `Authorization`, etc.) al ai-engine.
+- [x] Tests con cliente falso (Supertest): éxito, 400 (vacío, demasiado largo, history inválido, JSON roto),
   415, 502 (forma inesperada y 5xx), 503, 504, 500, y verificación de que no se filtran campos extra.
-- [ ] El `README`/docs del gateway documenta el contrato de `POST /api/chat`.
+- [x] El `README`/docs del gateway documenta el contrato de `POST /api/chat`.
 
 ## Fuera de alcance
 - Streaming SSE, autenticación, caché, reintentos automáticos (el LLM no es idempotente ni barato).

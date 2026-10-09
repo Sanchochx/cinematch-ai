@@ -19,18 +19,18 @@
 - Validación del mensaje **en el modelo** (no en el JSX): `validateMessage(text)` → trim, no vacío, ≤ 2000 caracteres.
 
 ## Criterios de aceptación
-- [ ] `chatService.sendMessage({ message, history }, signal)` hace `POST /api/chat` con JSON y devuelve `ChatResponse`
+- [x] `chatService.sendMessage({ message, history }, signal)` hace `POST /api/chat` con JSON y devuelve `ChatResponse`
   validada con un *type guard* (`unknown` → `ChatResponse`; sin `any`).
-- [ ] Mapea errores HTTP a `ChatError` tipado: `400→validation`, `429→rate_limited`, `502/503→unavailable`,
+- [x] Mapea errores HTTP a `ChatError` tipado: `400→validation`, `429→rate_limited`, `502/503→unavailable`,
   `504→timeout`, fallo de red/CORS→`network`, otro→`unknown`. Los mensajes visibles al usuario están en español y no exponen detalles técnicos.
-- [ ] Soporta cancelación con `AbortSignal` (al desmontar o al reenviar no quedan peticiones colgadas ni *state updates* tardíos).
-- [ ] `useChat()` devuelve `{ messages, isLoading, error, send, retry }` con tipos de retorno explícitos.
-- [ ] `send(text)`: valida, añade el mensaje del usuario de forma optimista, bloquea envíos concurrentes mientras `isLoading`,
+- [x] Soporta cancelación con `AbortSignal` (al desmontar o al reenviar no quedan peticiones colgadas ni *state updates* tardíos).
+- [x] `useChat()` devuelve `{ messages, isLoading, error, send, retry }` con tipos de retorno explícitos.
+- [x] `send(text)`: valida, añade el mensaje del usuario de forma optimista, bloquea envíos concurrentes mientras `isLoading`,
   y añade la respuesta del asistente al recibirla.
-- [ ] El `history` enviado excluye el mensaje actual, se recorta a los **últimos 20** ítems y solo contiene `role`/`content`.
-- [ ] En error, el mensaje del usuario se conserva y `retry()` reenvía el último intento sin duplicarlo en el historial.
-- [ ] Estado inmutable (nunca se muta el array de mensajes).
-- [ ] Tests (Vitest, `fetch` mockeado): éxito, cada mapeo de error, validación (vacío / >2000), recorte de historial,
+- [x] El `history` enviado excluye el mensaje actual, se recorta a los **últimos 20** ítems y solo contiene `role`/`content`.
+- [x] En error, el mensaje del usuario se conserva y `retry()` reenvía el último intento sin duplicarlo en el historial.
+- [x] Estado inmutable (nunca se muta el array de mensajes).
+- [x] Tests (Vitest, `fetch` mockeado): éxito, cada mapeo de error, validación (vacío / >2000), recorte de historial,
   cancelación, `retry`, y no-concurrencia.
 
 ## Fuera de alcance

@@ -1,5 +1,7 @@
 import express from 'express';
+import { chatRouter } from './routes/chat.js';
 import { healthRouter } from './routes/health.js';
+import { createAiEngineClient } from './services/aiEngineClient.js';
 
 function requestLogger(logger) {
   return (req, res, next) => {
@@ -13,13 +15,21 @@ function requestLogger(logger) {
 }
 
 // `routers` permite montar rutas de negocio (y dobles en tests) antes del 404 y del manejador de errores.
-export function createApp(config, { logger = console, routers = [] } = {}) {
+export function createApp(
+  config,
+  {
+    logger = console,
+    routers = [],
+    aiEngineClient = createAiEngineClient({ baseUrl: config.aiEngineUrl, timeoutMs: config.aiEngineTimeoutMs }),
+  } = {},
+) {
   const app = express();
   app.disable('x-powered-by');
   app.locals.config = config;
 
   app.use(requestLogger(logger));
   app.use(healthRouter());
+  app.use(chatRouter({ aiEngineClient, logger }));
   routers.forEach((router) => app.use(router));
 
   app.use((_req, res) => {

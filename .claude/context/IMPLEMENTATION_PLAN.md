@@ -22,11 +22,11 @@
 │  PROGRESO GLOBAL DEL PROYECTO                               │
 ├─────────────────────────────────────────────────────────────┤
 │  Total Historias de Usuario:     18                         │
-│  ✅ Completadas:                 12                         │
+│  ✅ Completadas:                 14                         │
 │  ⏳ En Progreso:                 0                          │
-│  ⏸️  Pendientes:                 6                          │
+│  ⏸️  Pendientes:                 4                          │
 │                                                             │
-│  Progreso: [██████░░░░] 67% (12/18)                         │
+│  Progreso: [████████░░] 78% (14/18)                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -59,8 +59,8 @@
 | 01 | Infraestructura base | — | — | — | — | Desplegada fuera del plan (sin US) |
 | 02 | MCP Server | 5 | 5 | 0 | 0 | [██████████] 100% |
 | 03 | AI Engine | 5 | 5 | 0 | 0 | [██████████] 100% |
-| 04 | API Gateway | 4 | 1 | 0 | 3 | [██░░░░░░░░] 25% |
-| 05 | Frontend | 4 | 1 | 0 | 3 | [██░░░░░░░░] 25% |
+| 04 | API Gateway | 4 | 2 | 0 | 2 | [█████░░░░░] 50% |
+| 05 | Frontend | 4 | 2 | 0 | 2 | [█████░░░░░] 50% |
 
 ---
 
@@ -203,8 +203,8 @@ reenvía `POST /api/chat` al ai-engine interno. Ambos servicios con Dockerfile m
 en `docker-compose.yml`.
 **Épicas:** 04 API Gateway, 05 Frontend
 **Total US:** 8 (26 pts)
-**Progreso:** [██░░░░░░░░] 25% (2/8)
-**Estado:** Historias aprobadas; en desarrollo (US-GW-001 y US-FE-001 completadas).
+**Progreso:** [█████░░░░░] 50% (4/8)
+**Estado:** Historias aprobadas; en desarrollo (US-GW-001, US-GW-002, US-FE-001 y US-FE-002 completadas).
 
 ---
 
@@ -225,7 +225,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 - **Dependencias:** Ninguna
 - **Criterios de Aceptación:** 11
 
-#### [ ] US-GW-002: `POST /api/chat` — validación y proxy al AI Engine
+#### [x] US-GW-002: `POST /api/chat` — validación y proxy al AI Engine
 - **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-002_chat_proxy/US-GW-002_chat_proxy.md`
 - **Prioridad:** CRÍTICA
 - **Estimación:** 5 pts
@@ -265,7 +265,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 - **Dependencias:** Ninguna
 - **Criterios de Aceptación:** 10
 
-#### [ ] US-FE-002: Feature `chat` — modelos, servicio HTTP y hook `useChat`
+#### [x] US-FE-002: Feature `chat` — modelos, servicio HTTP y hook `useChat`
 - **Archivo:** `context/user_stories/epic_05_frontend/US-FE-002_chat_service_hook/US-FE-002_chat_service_hook.md`
 - **Prioridad:** CRÍTICA
 - **Estimación:** 3 pts

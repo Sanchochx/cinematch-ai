@@ -13,7 +13,8 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "express": "^4.22.3"
+    "express": "^4.22.3",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
