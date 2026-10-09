@@ -24,7 +24,7 @@ Límites (`src/models/chatRequest.js`, `CHAT_LIMITS`): `message` 1–2000 caract
 | Situación | Status | `error` |
 |---|---|---|
 | Body inválido o JSON malformado | 400 | `invalid_request` |
-| Body > 64 kb | 413 | `payload_too_large` |
+| Body > 512 kb | 413 | `payload_too_large` |
 | Más de `RATE_LIMIT_MAX` peticiones por ventana | 429 | `rate_limited` |
 | Método distinto de POST/OPTIONS | 405 | `method_not_allowed` |
 | `Content-Type` distinto de `application/json` | 415 | `invalid_request` |
@@ -39,7 +39,7 @@ Los mensajes de error nunca incluyen trazas, URLs internas ni detalles del upstr
 Orden: `helmet` → CORS → rate limit → parser JSON → rutas.
 
 - **CORS:** allowlist exacta de `CORS_ORIGIN` (lista separada por comas; `*` se rechaza al arrancar y la variable es obligatoria con `NODE_ENV=production`). Un navegador desde otro origen recibe `403 forbidden_origin` sin cabeceras CORS. Preflight `OPTIONS /api/chat` → `204` (`POST, OPTIONS`, `Content-Type`, `Max-Age` 600, sin credenciales).
-- **Body:** máximo 64 kb (cubre el historial máximo: 21 × 2000 caracteres); superarlo → `413 payload_too_large`.
+- **Body:** máximo 512 kb (cubre el historial máximo: 20 × 10 000 caracteres + mensaje de 2000, con margen para UTF-8); superarlo → `413 payload_too_large`.
 - **Rate limit** por IP en `/api/chat`: `RATE_LIMIT_MAX` (20) por `RATE_LIMIT_WINDOW_MS` (60000) → `429 rate_limited` con `Retry-After`. `/health` y los preflights quedan fuera.
 - **Métodos:** en `/api/chat` solo `POST` y `OPTIONS`; el resto → `405` con `Allow`.
 - **Helmet** con cabeceras por defecto.

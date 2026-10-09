@@ -5,7 +5,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from agent import LlmError
 from api.routes import get_chat_service
-from api.schemas import MAX_HISTORY_ITEMS, MAX_MESSAGE_LENGTH
+from api.schemas import MAX_HISTORY_ITEM_LENGTH, MAX_HISTORY_ITEMS, MAX_MESSAGE_LENGTH
 from config import Settings, load_settings
 from main import create_app
 from mcp_client import McpConnectionError
@@ -51,6 +51,7 @@ def test_chat_ok_con_historial():
     {"message": "x" * (MAX_MESSAGE_LENGTH + 1)},
     {"message": "hola", "history": [{"role": "system", "content": "x"}]},
     {"message": "hola", "history": [{"role": "user", "content": ""}]},
+    {"message": "hola", "history": [{"role": "assistant", "content": "x" * (MAX_HISTORY_ITEM_LENGTH + 1)}]},
     {"message": "hola", "history": [{"role": "user", "content": "x"}] * (MAX_HISTORY_ITEMS + 1)},
 ])
 def test_chat_entrada_invalida_422(body):

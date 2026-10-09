@@ -3,12 +3,14 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 MAX_MESSAGE_LENGTH = 2000
+# El historial incluye respuestas largas del propio agente.
+MAX_HISTORY_ITEM_LENGTH = 10_000
 MAX_HISTORY_ITEMS = 20
 
 
 class HistoryItem(BaseModel):
     role: Literal["user", "assistant"]
-    content: str = Field(min_length=1, max_length=MAX_MESSAGE_LENGTH)
+    content: str = Field(min_length=1, max_length=MAX_HISTORY_ITEM_LENGTH)
 
 
 class ChatRequest(BaseModel):

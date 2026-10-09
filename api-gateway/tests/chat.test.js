@@ -31,6 +31,14 @@ describe('POST /api/chat — caso feliz', () => {
     });
   });
 
+  it('acepta en history respuestas largas (> límite de message)', async () => {
+    const { app, aiEngineClient } = setup();
+    const content = 'a'.repeat(CHAT_LIMITS.MAX_HISTORY_ITEM_LENGTH);
+    const res = await post(app, { message: 'hola', history: [{ role: 'assistant', content }] });
+    expect(res.status).toBe(200);
+    expect(aiEngineClient.chat).toHaveBeenCalledWith({ message: 'hola', history: [{ role: 'assistant', content }] });
+  });
+
   it('history es [] por defecto', async () => {
     const { app, aiEngineClient } = setup();
     await post(app, { message: 'hola' });
@@ -48,7 +56,10 @@ describe('POST /api/chat — validación (400)', () => {
     'history no es array': { message: 'hola', history: 'x' },
     'rol inválido': { message: 'hola', history: [{ role: 'system', content: 'x' }] },
     'content vacío': { message: 'hola', history: [{ role: 'user', content: '' }] },
-    'content demasiado largo': { message: 'hola', history: [{ role: 'user', content: longText }] },
+    'content de history demasiado largo': {
+      message: 'hola',
+      history: [{ role: 'assistant', content: 'a'.repeat(CHAT_LIMITS.MAX_HISTORY_ITEM_LENGTH + 1) }],
+    },
     'history con demasiados ítems': {
       message: 'hola',
       history: Array.from({ length: CHAT_LIMITS.MAX_HISTORY_ITEMS + 1 }, () => ({ role: 'user', content: 'x' })),

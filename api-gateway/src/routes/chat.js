@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 import { chatRequestSchema } from '../models/chatRequest.js';
 import { AiEngineError } from '../services/aiEngineClient.js';
 
-const BODY_LIMIT = '64kb';
+const BODY_LIMIT = '512kb';
 
 const ERRORS = {
   invalid_request: { status: 400, message: 'La solicitud no es válida. Revisa tu mensaje e inténtalo de nuevo.' },

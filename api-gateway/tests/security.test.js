@@ -68,9 +68,9 @@ describe('CORS', () => {
 });
 
 describe('límite de body', () => {
-  it('> 64kb → 413 payload_too_large', async () => {
+  it('> 512kb → 413 payload_too_large', async () => {
     const { app, aiEngineClient } = setup();
-    const res = await chat(app).send({ message: 'hola', padding: 'a'.repeat(65 * 1024) });
+    const res = await chat(app).send({ message: 'hola', padding: 'a'.repeat(513 * 1024) });
     expect(res.status).toBe(413);
     expect(res.body.error).toBe('payload_too_large');
     expect(aiEngineClient.chat).not.toHaveBeenCalled();
@@ -78,9 +78,9 @@ describe('límite de body', () => {
 });
 
 describe('límite de body vs. límites del chat', () => {
-  it('un historial máximo (> 40 kb) sigue siendo aceptado', async () => {
+  it('un historial máximo (> 200 kb) sigue siendo aceptado', async () => {
     const { app } = setup();
-    const history = Array.from({ length: 20 }, () => ({ role: 'user', content: 'a'.repeat(2000) }));
+    const history = Array.from({ length: 20 }, () => ({ role: 'assistant', content: 'a'.repeat(10000) }));
     const res = await chat(app).send({ message: 'a'.repeat(2000), history });
     expect(res.status).toBe(200);
   });
