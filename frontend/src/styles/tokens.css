@@ -26,6 +26,7 @@
   --color-on-primary: #1a1405;
   --color-danger: #ff8a8a;
   --color-border: #3a406b;
+  --color-border-strong: #8a90b8; /* bordes de controles: contraste >= 3:1 */
   --color-focus: #8ab4ff;
 
   /* Radios y sombras */

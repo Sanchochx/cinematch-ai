@@ -120,7 +120,10 @@ refactor(api-gateway): extraer cliente del ai-engine
 # api-gateway
 PORT=3000
 AI_ENGINE_URL=http://ai-engine:8000
-CORS_ORIGIN=http://localhost:5173
+CORS_ORIGIN=http://localhost:5173   # allowlist exacta, lista separada por comas; `*` rechazado; obligatoria con NODE_ENV=production
+AI_ENGINE_TIMEOUT_MS=30000      # opcional
+RATE_LIMIT_MAX=20               # opcional; peticiones por IP y ventana en /api/chat
+RATE_LIMIT_WINDOW_MS=60000      # opcional
 
 # ai-engine
 OPENAI_API_KEY=...              # clave del LLM (langchain-openai)

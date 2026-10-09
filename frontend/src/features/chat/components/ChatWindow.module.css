@@ -1,0 +1,38 @@
+.window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  width: 100%;
+  max-width: 48rem;
+  height: 100dvh;
+  margin-inline: auto;
+  background: var(--color-bg);
+}
+
+.header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.tagline {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.body {
+  display: grid;
+  min-height: 0;
+}
+
+@media (min-width: 48rem) {
+  .window {
+    height: min(100dvh, 56rem);
+    margin-block: auto;
+    border-inline: 1px solid var(--color-border);
+  }
+}

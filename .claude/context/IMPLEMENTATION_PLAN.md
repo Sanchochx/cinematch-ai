@@ -22,11 +22,11 @@
 │  PROGRESO GLOBAL DEL PROYECTO                               │
 ├─────────────────────────────────────────────────────────────┤
 │  Total Historias de Usuario:     18                         │
-│  ✅ Completadas:                 14                         │
+│  ✅ Completadas:                 16                         │
 │  ⏳ En Progreso:                 0                          │
-│  ⏸️  Pendientes:                 4                          │
+│  ⏸️  Pendientes:                 2                          │
 │                                                             │
-│  Progreso: [████████░░] 78% (14/18)                         │
+│  Progreso: [█████████░] 89% (16/18)                         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -59,8 +59,8 @@
 | 01 | Infraestructura base | — | — | — | — | Desplegada fuera del plan (sin US) |
 | 02 | MCP Server | 5 | 5 | 0 | 0 | [██████████] 100% |
 | 03 | AI Engine | 5 | 5 | 0 | 0 | [██████████] 100% |
-| 04 | API Gateway | 4 | 2 | 0 | 2 | [█████░░░░░] 50% |
-| 05 | Frontend | 4 | 2 | 0 | 2 | [█████░░░░░] 50% |
+| 04 | API Gateway | 4 | 3 | 0 | 1 | [███████░░░] 75% |
+| 05 | Frontend | 4 | 3 | 0 | 1 | [███████░░░] 75% |
 
 ---
 
@@ -203,8 +203,8 @@ reenvía `POST /api/chat` al ai-engine interno. Ambos servicios con Dockerfile m
 en `docker-compose.yml`.
 **Épicas:** 04 API Gateway, 05 Frontend
 **Total US:** 8 (26 pts)
-**Progreso:** [█████░░░░░] 50% (4/8)
-**Estado:** Historias aprobadas; en desarrollo (US-GW-001, US-GW-002, US-FE-001 y US-FE-002 completadas).
+**Progreso:** [███████░░░] 75% (6/8)
+**Estado:** Historias aprobadas; en desarrollo (US-GW-001/002/003 y US-FE-001/002/003 completadas; pruebas manuales y Lighthouse a cargo del Tech Lead con el stack Docker completo).
 
 ---
 
@@ -232,7 +232,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 - **Dependencias:** US-GW-001
 - **Criterios de Aceptación:** 10
 
-#### [ ] US-GW-003: CORS restrictivo y endurecimiento HTTP del gateway
+#### [x] US-GW-003: CORS restrictivo y endurecimiento HTTP del gateway
 - **Archivo:** `context/user_stories/epic_04_api_gateway/US-GW-003_cors_security/US-GW-003_cors_security.md`
 - **Prioridad:** CRÍTICA
 - **Estimación:** 3 pts
@@ -272,7 +272,7 @@ Orden de ejecución: `001 → 002 → 003 → 004`.
 - **Dependencias:** US-FE-001 (contrato de US-GW-002)
 - **Criterios de Aceptación:** 9
 
-#### [ ] US-FE-003: UI de chat accesible con recomendaciones
+#### [x] US-FE-003: UI de chat accesible con recomendaciones
 - **Archivo:** `context/user_stories/epic_05_frontend/US-FE-003_chat_ui/US-FE-003_chat_ui.md`
 - **Prioridad:** CRÍTICA
 - **Estimación:** 5 pts

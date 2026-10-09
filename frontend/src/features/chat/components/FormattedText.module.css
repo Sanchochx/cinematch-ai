@@ -1,0 +1,16 @@
+.text > * {
+  margin: 0;
+}
+
+.text > * + * {
+  margin-top: var(--space-3);
+}
+
+.text ul,
+.text ol {
+  padding-left: var(--space-6);
+}
+
+.text li + li {
+  margin-top: var(--space-1);
+}

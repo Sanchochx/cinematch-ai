@@ -1,17 +1,8 @@
 .app {
-  display: grid;
   min-height: 100dvh;
-  place-items: center;
-  padding: clamp(var(--space-4), 4vw, var(--space-12));
-  text-align: center;
 }
 
-.title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-xl);
-}
-
-.tagline {
-  margin: 0;
-  color: var(--color-text-muted);
+/* Reserva la altura del chat para evitar CLS mientras carga el chunk. */
+.fallback {
+  height: 100dvh;
 }

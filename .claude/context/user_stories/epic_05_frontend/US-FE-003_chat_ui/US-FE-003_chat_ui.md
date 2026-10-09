@@ -20,30 +20,30 @@
 
 ## Criterios de aceptación
 **Funcionalidad**
-- [ ] Estado vacío con bienvenida y 3 *prompts* sugeridos clicables que rellenan/envían el mensaje.
-- [ ] El usuario escribe en un `<textarea>` y envía con botón o `Enter` (`Shift+Enter` = salto de línea).
-- [ ] Burbujas diferenciadas usuario/asistente; la lista hace *scroll* automático al último mensaje sin saltos de layout.
-- [ ] Mientras `isLoading` se muestra `TypingIndicator` y se deshabilita el envío (no se pierde el texto escrito).
-- [ ] Contador/validación de longitud (≤ 2000) con mensaje de error asociado vía `aria-describedby`; no se envía vacío.
-- [ ] En error: `ErrorBanner` con mensaje en español según `ChatErrorKind` y botón **Reintentar** (`retry`).
-- [ ] La respuesta del asistente muestra la recomendación formateada (párrafos/listas); el HTML crudo nunca se interpreta.
+- [x] Estado vacío con bienvenida y 3 *prompts* sugeridos clicables que rellenan/envían el mensaje.
+- [x] El usuario escribe en un `<textarea>` y envía con botón o `Enter` (`Shift+Enter` = salto de línea).
+- [x] Burbujas diferenciadas usuario/asistente; la lista hace *scroll* automático al último mensaje sin saltos de layout.
+- [x] Mientras `isLoading` se muestra `TypingIndicator` y se deshabilita el envío (no se pierde el texto escrito).
+- [x] Contador/validación de longitud (≤ 2000) con mensaje de error asociado vía `aria-describedby`; no se envía vacío.
+- [x] En error: `ErrorBanner` con mensaje en español según `ChatErrorKind` y botón **Reintentar** (`retry`).
+- [x] La respuesta del asistente muestra la recomendación formateada (párrafos/listas); el HTML crudo nunca se interpreta.
 
 **Accesibilidad (no negociable)**
-- [ ] Todo es operable con teclado (`Tab`, `Enter`/`Space`); orden de foco lógico; tras enviar, el foco vuelve al `textarea`.
-- [ ] `<label>` asociada al textarea (puede ser visualmente oculta, no solo `placeholder`).
-- [ ] La lista de mensajes es una región `role="log"` con `aria-live="polite"`; el estado de carga se anuncia ("El asistente está escribiendo").
-- [ ] `:focus-visible` visible en todos los controles; nunca `outline: none` sin reemplazo.
-- [ ] Contraste AA (4.5:1 texto normal, 3:1 grande) verificado; objetivos táctiles ≥ 44px.
-- [ ] `prefers-reduced-motion` respetado; animaciones solo con `transform`/`opacity` (150–200 ms).
-- [ ] HTML semántico (`<main>`, `<header>`, `<form>`, `<button>`); un único `<h1>`.
+- [x] Todo es operable con teclado (`Tab`, `Enter`/`Space`); orden de foco lógico; tras enviar, el foco vuelve al `textarea`.
+- [x] `<label>` asociada al textarea (puede ser visualmente oculta, no solo `placeholder`).
+- [x] La lista de mensajes es una región `role="log"` con `aria-live="polite"`; el estado de carga se anuncia ("El asistente está escribiendo").
+- [x] `:focus-visible` visible en todos los controles; nunca `outline: none` sin reemplazo.
+- [x] Contraste AA (4.5:1 texto normal, 3:1 grande) verificado; objetivos táctiles ≥ 44px.
+- [x] `prefers-reduced-motion` respetado; animaciones solo con `transform`/`opacity` (150–200 ms).
+- [x] HTML semántico (`<main>`, `<header>`, `<form>`, `<button>`); un único `<h1>`.
 
 **Rendimiento y calidad**
-- [ ] Layout responsivo probado a 320px, 768px y 1280px sin scroll horizontal; CLS = 0 (alturas reservadas).
-- [ ] Ruta/feature cargada con `React.lazy` + `Suspense` (*bundle splitting* por feature).
-- [ ] Sin `any`, sin `console.log`; ESLint/Prettier sin warnings.
-- [ ] Tests (Vitest + Testing Library): cada componente tiene al menos un test de renderizado; flujos: enviar con Enter,
+- [x] Layout responsivo probado a 320px, 768px y 1280px sin scroll horizontal; CLS = 0 (alturas reservadas).
+- [x] Ruta/feature cargada con `React.lazy` + `Suspense` (*bundle splitting* por feature).
+- [x] Sin `any`, sin `console.log`; ESLint/Prettier sin warnings.
+- [x] Tests (Vitest + Testing Library): cada componente tiene al menos un test de renderizado; flujos: enviar con Enter,
   Shift+Enter no envía, vacío bloqueado, estado de carga, error + reintentar, escape de HTML en respuestas, prompts sugeridos.
-- [ ] Revisión automática de a11y (p. ej. `jest-axe`/`vitest-axe`) sin violaciones en el estado vacío, con mensajes y con error.
+- [x] Revisión automática de a11y (p. ej. `jest-axe`/`vitest-axe`) sin violaciones en el estado vacío, con mensajes y con error.
 
 ## Fuera de alcance
 - Fichas con póster/metadatos (requiere ampliar el contrato `{reply, movies[]}`), streaming de tokens, modo oscuro,

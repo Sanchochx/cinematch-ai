@@ -6,6 +6,8 @@ const BODY_LIMIT = '64kb';
 
 const ERRORS = {
   invalid_request: { status: 400, message: 'La solicitud no es válida. Revisa tu mensaje e inténtalo de nuevo.' },
+  payload_too_large: { status: 413, message: 'El mensaje es demasiado grande.' },
+  method_not_allowed: { status: 405, message: 'Método no permitido.' },
   unsupported_media_type: { status: 415, message: 'El contenido debe enviarse como application/json.' },
   upstream_unavailable: { status: 503, message: 'El servicio no está disponible en este momento. Inténtalo más tarde.' },
   upstream_error: { status: 502, message: 'No hemos podido obtener una respuesta. Inténtalo de nuevo.' },
@@ -23,10 +25,10 @@ function requireJson(req, res, next) {
   next();
 }
 
-export function chatRouter({ aiEngineClient, logger = console }) {
+export function chatRouter({ aiEngineClient, rateLimiter, logger = console }) {
   const router = Router();
 
-  router.post('/api/chat', requireJson, express.json({ limit: BODY_LIMIT }), async (req, res) => {
+  router.post('/api/chat', rateLimiter, requireJson, express.json({ limit: BODY_LIMIT }), async (req, res) => {
     const parsed = chatRequestSchema.safeParse(req.body);
     if (!parsed.success) return sendError(res, 'invalid_request');
 
@@ -41,12 +43,17 @@ export function chatRouter({ aiEngineClient, logger = console }) {
     }
   });
 
-  // JSON malformado o cuerpo demasiado grande: 400 sin eco del payload.
+  // JSON malformado → 400 y cuerpo demasiado grande → 413, sin eco del payload.
   router.use('/api/chat', (err, _req, res, next) => {
-    if (err?.type === 'entity.parse.failed' || err?.type === 'entity.too.large') {
-      return sendError(res, 'invalid_request');
-    }
+    if (err?.type === 'entity.too.large') return sendError(res, 'payload_too_large');
+    if (err?.type === 'entity.parse.failed') return sendError(res, 'invalid_request');
     next(err);
+  });
+
+  // OPTIONS lo resuelve el middleware CORS antes de llegar aquí.
+  router.all('/api/chat', (_req, res) => {
+    res.set('Allow', 'POST, OPTIONS');
+    sendError(res, 'method_not_allowed');
   });
 
   return router;

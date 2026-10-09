@@ -1,4 +1,6 @@
 import express from 'express';
+import helmet from 'helmet';
+import { corsMiddleware, createRateLimiter, originGuard } from './middleware/security.js';
 import { chatRouter } from './routes/chat.js';
 import { healthRouter } from './routes/health.js';
 import { createAiEngineClient } from './services/aiEngineClient.js';
@@ -28,8 +30,11 @@ export function createApp(
   app.locals.config = config;
 
   app.use(requestLogger(logger));
+  // Orden: seguridad (helmet, CORS) → rate limit → parser JSON → rutas.
+  app.use(helmet());
   app.use(healthRouter());
-  app.use(chatRouter({ aiEngineClient, logger }));
+  app.use('/api', originGuard(config.corsOrigins), corsMiddleware(config.corsOrigins));
+  app.use(chatRouter({ aiEngineClient, logger, rateLimiter: createRateLimiter(config) }));
   routers.forEach((router) => app.use(router));
 
   app.use((_req, res) => {

@@ -1,12 +1,17 @@
+import { lazy, Suspense } from 'react';
 import styles from './App.module.css';
+
+// Bundle splitting por feature: el chat se descarga bajo demanda.
+const ChatWindow = lazy(() => import('./features/chat').then((m) => ({ default: m.ChatWindow })));
 
 export default function App(): React.JSX.Element {
   return (
     <main className={styles.app}>
-      <div>
-        <h1 className={styles.title}>CineMatch AI</h1>
-        <p className={styles.tagline}>Cuéntame qué te apetece ver y te recomiendo una película.</p>
-      </div>
+      <Suspense
+        fallback={<div className={styles.fallback} role="status" aria-label="Cargando chat" />}
+      >
+        <ChatWindow />
+      </Suspense>
     </main>
   );
 }

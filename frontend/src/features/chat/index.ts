@@ -1,3 +1,4 @@
+export { ChatWindow } from './components/ChatWindow';
 export { useChat } from './hooks/useChat';
 export type { UseChatResult } from './hooks/useChat';
 export { chatService } from './services/chatService';

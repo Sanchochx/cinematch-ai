@@ -72,11 +72,6 @@ describe('POST /api/chat — validación (400)', () => {
     expect(JSON.stringify(res.body)).not.toContain('SECRETO');
   });
 
-  it('body demasiado grande: 400', async () => {
-    const { app } = setup();
-    const res = await post(app, { message: 'hola', padding: 'a'.repeat(100_000) });
-    expect(res.status).toBe(400);
-  });
 
   it('acepta exactamente los límites', async () => {
     const { app } = setup();

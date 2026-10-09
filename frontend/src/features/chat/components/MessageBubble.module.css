@@ -1,0 +1,54 @@
+.row {
+  display: flex;
+  animation: appear var(--duration-fast) ease-out;
+}
+
+.user {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: min(85%, 42rem);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  overflow-wrap: anywhere;
+}
+
+.user .bubble {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.assistant .bubble {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.author {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.plain {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.failed {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
